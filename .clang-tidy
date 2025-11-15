@@ -1,0 +1,3 @@
+WarningsAsErrors : '*'
+Checks           : 'google-*,bugprone-*,cert-*,clang-*,concurrency-*,cppcoreguidelines-*,hicpp-*,misc-*,modernize-*,performance-*,portability-*,readability-*'
+FormatStyle      : 'file'

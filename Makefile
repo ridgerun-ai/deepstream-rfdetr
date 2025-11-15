@@ -31,7 +31,7 @@ TARGET := libdeepstream-rfdetr.so
 SRCS := deepstream_rfdetr_bbox.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-.PHONY: all clean
+.PHONY: all clean lint format
 
 all: $(TARGET)
 
@@ -43,3 +43,9 @@ $(TARGET): $(OBJS) Makefile
 
 clean:
 	rm -f *.o *.so *~ \#*
+
+lint:
+	clang-tidy --extra-arg=-isystem/usr/include/c++/13 --extra-arg=-isystem/usr/include/aarch64-linux-gnu/c++/13/  $(SRCS)
+
+format:
+	clang-format --style=file -i $(SRCS)
