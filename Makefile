@@ -13,7 +13,7 @@ DS_HOME ?= /opt/nvidia/deepstream/deepstream/
 CUDA_HOME ?= /usr/local/cuda/
 DEV ?= 0
 
-CXXFLAGS := -Wall -std=c++17 -fPIC -O3
+CXXFLAGS := -Wall -std=c++20 -fPIC -O3
 
 CXXFLAGS +=                     \
   -I$(DS_HOME)/sources/includes \
@@ -24,7 +24,7 @@ CXXFLAGS += -O0 -ggdb3 -Werror
 endif
 
 LIBS := -lnvinfer
-LDFLAGS := -shared 
+LDFLAGS := -shared
 
 TARGET := libdeepstream-rfdetr.so
 
