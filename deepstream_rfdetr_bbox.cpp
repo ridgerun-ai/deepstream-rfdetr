@@ -19,9 +19,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <limits>
 #include <optional>
 #include <span>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -55,36 +57,58 @@ struct Layer {
 };
 
 template <typename T>
-void softmax(std::span<const T> input, std::span<T> output) {
-  const std::size_t size = input.size();
-  assert(output.size() == size);
+auto softmax_of_best_logit(std::span<const T> logit,
+                           std::span<const T> thresholds)
+    -> std::optional<std::pair<std::size_t, T>> {
+  const std::size_t size = logit.size();
+  assert(size > 0);
+  assert(thresholds.size() == size);
 
-  if (size == 0) {
-    return;
-  }
-
-  // 1) Find max element for numerical stability
-  T max_val = input[0];
+  // 0) argmax
+  std::size_t max_idx = 0;
+  T max_val = logit[0];
   for (std::size_t i = 1; i < size; ++i) {
-    if (input[i] > max_val) {
-      max_val = input[i];
+    if (logit[i] > max_val) {
+      max_val = logit[i];
+      max_idx = i;
     }
   }
 
-  // 2) Compute exp(x - max) into output and accumulate the sum
-  T sum = T(0);
-  for (std::size_t i = 0; i < size; ++i) {
-    const T val = input[i] - max_val;
-    const T exp = static_cast<T>(std::exp(static_cast<long double>(val)));
-    output[i] = exp;
-    sum += exp;
+  // 1) Ignore if its background
+  if (max_idx == Layer::Classes::BACKGROUND) {
+    return std::nullopt;
   }
 
-  // 3) Normalize
-  const T inv_sum = T(1) / sum;
+  // 2) extract the threshold for this class
+  T threshold = thresholds[max_idx];
+
+  // 3) threshold → limit
+  const long double eps = std::numeric_limits<long double>::epsilon();
+  const long double thr = std::max(static_cast<long double>(threshold), eps);
+
+  const long double limit = 1.0L / thr - 1.0L;
+
+  // 4) accumulate Σ_{j≠max} exp(z_j - z_max)
+  long double sum_exp_others = 0.0L;
+
   for (std::size_t i = 0; i < size; ++i) {
-    output[i] *= inv_sum;
+    if (i == max_idx) {
+      continue;
+    }
+
+    const auto diff = static_cast<long double>(logit[i] - max_val);
+    sum_exp_others += std::exp(diff);
+
+    if (sum_exp_others > limit) {
+      return std::nullopt;
+    }
   }
+
+  // 5) exact softmax probability of max logit
+  const long double p_max_ld = 1.0L / (1.0L + sum_exp_others);
+  const T p_max = static_cast<T>(p_max_ld);
+
+  return std::make_pair(max_idx, p_max);
 }
 
 auto find_layer(const std::vector<NvDsInferLayerInfo> &layers,
@@ -119,17 +143,9 @@ auto parse_detection(std::span<const T> boxes, std::span<const T> classes,
                      const NvDsInferParseDetectionParams &params,
                      unsigned int width, unsigned int height)
     -> std::optional<NvDsInferObjectDetectionInfo> {
-  const auto num_classes = classes.size();
-  std::vector<T> softmax_tensor(num_classes);
-  softmax(classes, std::span{softmax_tensor});
-
-  auto class_id = std::max_element(softmax_tensor.begin(),
-                                   softmax_tensor.begin() + num_classes) -
-                  softmax_tensor.begin();
-  T confidence = softmax_tensor[class_id];
-
-  if (confidence < params.perClassPreclusterThreshold[class_id] ||
-      Layer::Classes::BACKGROUND == class_id) {
+  auto best = softmax_of_best_logit(
+      classes, std::span{params.perClassPreclusterThreshold});
+  if (!best) {
     return std::nullopt;
   }
 
@@ -151,7 +167,8 @@ auto parse_detection(std::span<const T> boxes, std::span<const T> classes,
   box_y2 = std::clamp(box_y2, min_y, max_y);
 
   NvDsInferObjectDetectionInfo pred;
-  pred.detectionConfidence = confidence;
+  pred.classId = best->first;
+  pred.detectionConfidence = best->second;
   pred.left = box_x1;
   pred.top = box_y1;
   pred.width = box_x2 - box_x1;
