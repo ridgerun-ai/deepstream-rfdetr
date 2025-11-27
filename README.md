@@ -33,6 +33,28 @@ libdeepstream-rfdetr.so
 This is the library that must be configured in the `custom-lib-path` property of
 the NvInfer.
 
+## Downloading Pretrained Weights
+
+The official RF-DETR weights are hosted by Roboflow and exposed via
+ephemeral URLs. The recommended method is to use their `inference`
+package to do so. We provide a small utility to download weights:
+
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/) if you havent.
+
+2. Download the weights by running:
+```bash
+uv run ./download_weights MODEL_ID
+```
+where `MODEL_ID` is one of:
+- rfdetr-base (deprecated)
+- rfdetr-nano
+- rfdetr-small
+- rfdetr-medium
+- rfdetr-large
+
+The script will download the weights to the current working directory
+as `MODEL_ID.onnx`.
+
 ## Using RF-DETR in DeepStream
 
 An example configuration file for NvInfer is provided in
