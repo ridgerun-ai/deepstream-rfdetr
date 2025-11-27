@@ -91,3 +91,11 @@ image size of your input video.
 ## Performance 
 
 TODO
+
+## Notes for Maintainers
+
+- Build the project as `make DEV=1`. This will build in debug mode, as
+  well as not allowing warnings.
+- Format the code by running `make format`.
+- Lint the code by running `make lint`.
+- Make sure all these three are clean before submitting a PR.
