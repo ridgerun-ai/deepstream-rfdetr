@@ -43,7 +43,7 @@ package to do so. We provide a small utility to download weights:
 
 2. Download the weights by running:
 ```bash
-uv run ./download_weights MODEL_ID
+uv run ./download_weights.py MODEL_ID
 ```
 where `MODEL_ID` is one of:
 - rfdetr-base (deprecated)
