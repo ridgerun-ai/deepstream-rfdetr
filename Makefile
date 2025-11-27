@@ -9,6 +9,8 @@
 # RidgeRun. All source code changes must be provided back to RidgeRun
 # without any encumbrance.
 
+VERSION := 0.1.0
+
 DS_HOME ?= /opt/nvidia/deepstream/deepstream/
 CUDA_HOME ?= /usr/local/cuda/
 DEV ?= 0
@@ -31,7 +33,7 @@ TARGET := libdeepstream-rfdetr.so
 SRCS := deepstream_rfdetr_bbox.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-.PHONY: all clean lint format
+.PHONY: all clean lint format version
 
 all: $(TARGET)
 
@@ -49,3 +51,6 @@ lint:
 
 format:
 	clang-format --style=file -i $(SRCS)
+
+version:
+	@echo "DeepStream RF-DETR $(VERSION)"
