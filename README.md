@@ -129,10 +129,12 @@ gst-launch-1.0 -e filesrc location=/opt/nvidia/deepstream/deepstream/samples/str
 | AGX Orin | 7.0        | rfdetr-large  | 1     | FP16      | 43 (\*)(\*\*\*) |
 | AGX Orin | 7.0        | rfdetr-base   | 1     | FP16      | 124 (\*)(\*\*\*) |
 
-**(\*): Detection quality is degraded considerably, make sure to compare.
-between types and that could affect accuracy
+**(\*)**: Detection quality is degraded considerably, make sure to compare.
+between types and that could affect accuracy.
+
 **(\*\*)TRT Warning**: TensorRT encountered issues when converting weights
-between types and that could affect accuracy
+between types and that could affect accuracy.
+
 **(\*\*\*) TRT Warning**: Running layernorm after self-attention in FP16 may
 cause overflow.
 
