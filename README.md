@@ -12,11 +12,13 @@ At the time being, the following features are supported:
 The following features are a work in progress:
 - [ ] INT8 calibration files
 - [ ] RF-DETR for segmentation
+- [ ] DLA validation
 
 ## Supported DeepStream Versions
 
 The project has been tested on the following DeepStream versions:
 - DeepStream 8.0
+- DeepStream 7.0
 
 ## Building the Project
 
@@ -88,9 +90,50 @@ gst-launch-1.0 -e filesrc location=INPUT.mp4 ! decodebin ! queue ! mux.sink_0 \
 Remember to adjust the `nvstreammux` width and height properties to match the
 image size of your input video.
 
+### Switching Between Model Sizes
+
+The config file uses RF-DETR Nano by default. To change it to a
+different model size, modify the following properties in the config:
+- onnx-file=/path/to/**<model-id>**.onnx
+- model-engine-file=/path/to/**<model-id>**.onnx_b1_gpu0_fp32.engine
+
+where **<model-id>** is one of the ID's listed above. You'll need to
+adjust the **b1** (batch size) nand **fp32** (precision) portions of
+the engine according to the values set in **batch-size** and
+**network-mode** properties, respectively.
+
 ## Performance 
 
-TODO
+Every benchmark below was done using the following pipeline. You can
+get the [perf](https://github.com/ridgerun/gst-perf) from GitHub.
+
+```bash
+gst-launch-1.0 -e filesrc location=/opt/nvidia/deepstream/deepstream/samples/streams/sample_1080p_h264.mp4 ! \
+  decodebin ! queue ! mux.sink_0 \
+  nvstreammux name=mux width=1920 height=1080 batch-size=1 ! queue ! \
+  nvinfer config-file-path=deepstream_rfdetr_bbox_config.txt ! \
+  perf ! fakesink
+```
+
+| Platform | DeepStream | Model         | Batch | Precision | FPS |
+|----------|------------|---------------|-------|-----------|-----|
+| AGX Orin | 7.0        | rfdetr-nano   | 1     | FP32      | 127 |
+| AGX Orin | 7.0        | rfdetr-small  | 1     | FP32      | 69  |
+| AGX Orin | 7.0        | rfdetr-medium | 1     | FP32      | 52  |
+| AGX Orin | 7.0        | rfdetr-large  | 1     | FP32      | 16  |
+| AGX Orin | 7.0        | rfdetr-base   | 1     | FP32      | 47  |
+| AGX Orin | 7.0        | rfdetr-nano   | 1     | FP16      | 238 (\*) |
+| AGX Orin | 7.0        | rfdetr-small  | 1     | FP16      | 151 (\*)(\*\*) |
+| AGX Orin | 7.0        | rfdetr-medium | 1     | FP16      | 121 (\*)(\*\*) |
+| AGX Orin | 7.0        | rfdetr-large  | 1     | FP16      | 43 (\*)(\*\*\*) |
+| AGX Orin | 7.0        | rfdetr-base   | 1     | FP16      | 124 (\*)(\*\*\*) |
+
+**(\*): Detection quality is degraded considerably, make sure to compare.
+between types and that could affect accuracy
+**(\*\*)TRT Warning**: TensorRT encountered issues when converting weights
+between types and that could affect accuracy
+**(\*\*\*) TRT Warning**: Running layernorm after self-attention in FP16 may
+cause overflow.
 
 ## Notes for Maintainers
 
