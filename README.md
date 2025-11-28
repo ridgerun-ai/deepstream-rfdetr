@@ -94,10 +94,10 @@ image size of your input video.
 
 The config file uses RF-DETR Nano by default. To change it to a
 different model size, modify the following properties in the config:
-- onnx-file=/path/to/**<model-id>**.onnx
-- model-engine-file=/path/to/**<model-id>**.onnx_b1_gpu0_fp32.engine
+- onnx-file=/path/to/**\<model-id\>**.onnx
+- model-engine-file=/path/to/**\<model-id\>**.onnx_b1_gpu0_fp32.engine
 
-where **<model-id>** is one of the ID's listed above. You'll need to
+where **\<model-id\>** is one of the ID's listed above. You'll need to
 adjust the **b1** (batch size) nand **fp32** (precision) portions of
 the engine according to the values set in **batch-size** and
 **network-mode** properties, respectively.
