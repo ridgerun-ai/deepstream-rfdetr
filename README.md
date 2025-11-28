@@ -80,7 +80,8 @@ that performs inference using RF-DETR over a file, and saves the result to a
 file is:
 
 ```bash
-gst-launch-1.0 -e filesrc location=INPUT.mp4 ! decodebin ! queue ! mux.sink_0 \
+gst-launch-1.0 -e filesrc location=/opt/nvidia/deepstream/deepstream/samples/streams/sample_1080p_h264.mp4 \
+    ! decodebin ! queue ! mux.sink_0 \
     nvstreammux name=mux width=1920 height=1080 batch-size=1 ! \
     nvinfer config-file-path=deepstream_rfdetr_bbox_config.txt ! \
     queue ! nvdsosd ! nvv4l2h264enc ! h264parse ! queue ! mp4mux ! \
