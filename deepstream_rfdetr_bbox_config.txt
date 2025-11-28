@@ -153,7 +153,7 @@ input-tensor-from-meta=0
 # Primary/Secondary: Both
 #
 # RF-DETR: based on the onnx name and current configuration
-model-engine-file=/rfdetr/rfdetr-nano.onnx_b1_gpu0_fp32.engine
+model-engine-file=rfdetr-nano.onnx_b1_gpu0_fp32.engine
 
 ##########
 # onnx-file:
@@ -165,7 +165,7 @@ model-engine-file=/rfdetr/rfdetr-nano.onnx_b1_gpu0_fp32.engine
 # Network type: All
 # Primary/Secondary: Both
 #
-onnx-file=/rfdetr/rfdetr-nano.onnx
+onnx-file=rfdetr-nano.onnx
 
 ##########
 # enable-dbscan:
@@ -188,7 +188,7 @@ onnx-file=/rfdetr/rfdetr-nano.onnx
 # Network type: Detector & Classifier
 # Primary/Secondary: Both
 #
-labelfile-path=/rfdetr/coco91_labels.txt
+labelfile-path=coco91_labels.txt
 
 ##########
 # mean-file:
