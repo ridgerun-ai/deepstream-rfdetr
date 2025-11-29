@@ -128,9 +128,18 @@ gst-launch-1.0 -e filesrc location=/opt/nvidia/deepstream/deepstream/samples/str
 | AGX Orin | 7.0        | rfdetr-medium | 1     | FP16      | 121 (\*)(\*\*) |
 | AGX Orin | 7.0        | rfdetr-large  | 1     | FP16      | 43 (\*)(\*\*\*) |
 | AGX Orin | 7.0        | rfdetr-base   | 1     | FP16      | 124 (\*)(\*\*\*) |
+| DGX Spark | 8.0        | rfdetr-nano   | 1     | FP32      | 266 |
+| DGX Spark | 8.0        | rfdetr-small  | 1     | FP32      | 135 |
+| DGX Spark | 8.0        | rfdetr-medium | 1     | FP32      | 102 |
+| DGX Spark | 8.0        | rfdetr-large  | 1     | FP32      | 38 |
+| DGX Spark | 8.0        | rfdetr-base   | 1     | FP32      | 95 |
+| DGX Spark | 8.0        | rfdetr-nano   | 1     | FP16      | 488 |
+| DGX Spark | 8.0        | rfdetr-small  | 1     | FP16      | 270 |
+| DGX Spark | 8.0        | rfdetr-medium | 1     | FP16      | 153 |
+| DGX Spark | 8.0        | rfdetr-large  | 1     | FP16      | 75 (\*\*\*) |
+| DGX Spark | 8.0        | rfdetr-base   | 1     | FP16      | 195 (\*\*\*) |
 
 **(\*)**: Detection quality is degraded considerably, make sure to compare.
-between types and that could affect accuracy.
 
 **(\*\*)TRT Warning**: TensorRT encountered issues when converting weights
 between types and that could affect accuracy.
